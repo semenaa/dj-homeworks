@@ -28,3 +28,33 @@ DATA = {
 #     'ингредиент2': количество2,
 #   }
 # }
+
+
+# Умножить элементы списка на число порций, вернуть новый словарь
+def multiply(ingredients, count=1):
+    multiplied_ingrs = {}
+    for key in ingredients.keys():
+        # следующие проверки пришлось вставить, т.к. float после умножения
+        # показывал некрасивые числа 0.30000000000004 и т.п.
+        if type(ingredients[key]) is int:
+            multiplied_ingrs[key] = ingredients[key] * count
+        if type(ingredients[key]) is float:
+            num = ingredients[key] * count
+            multiplied_ingrs[key] = f'{num:.2f}'
+    return multiplied_ingrs
+
+
+def omlet(request):
+    servings = int(request.GET.get('servings', 1))
+    context = {'recipe': multiply(DATA['omlet'], servings)}
+    return render(request, 'calculator/index.html', context)
+
+def pasta(request):
+    servings = int(request.GET.get('servings', 1))
+    context = {'recipe': multiply(DATA['pasta'], servings)}
+    return render(request, 'calculator/index.html', context)
+
+def buter(request):
+    servings = int(request.GET.get('servings', 1))
+    context = {'recipe': multiply(DATA['buter'], servings)}
+    return render(request, 'calculator/index.html', context)
