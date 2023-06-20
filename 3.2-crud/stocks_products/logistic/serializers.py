@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from logistic.models import Product, StockProduct
+from logistic.models import Product, StockProduct, Stock
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -14,13 +14,17 @@ class ProductPositionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StockProduct
-        fields = ['stock', 'product', 'quantity', 'price']
+        fields = ['product', 'quantity', 'price']
 
 
 class StockSerializer(serializers.ModelSerializer):
     positions = ProductPositionSerializer(many=True)
 
     # настройте сериализатор для склада
+
+    class Meta:
+        model = Stock
+        fields = ['address', 'positions']
 
     def create(self, validated_data):
         # достаем связанные данные для других таблиц
@@ -32,6 +36,13 @@ class StockSerializer(serializers.ModelSerializer):
         # здесь вам надо заполнить связанные таблицы
         # в нашем случае: таблицу StockProduct
         # с помощью списка positions
+
+        for item in positions:
+            operation = StockProduct.objects.get_or_create(stock=stock,
+                                                              product=item.get('product'),
+                                                              quantity=item.get('quantity'),
+                                                              price=item.get('price')
+                                                              ).save()
 
         return stock
 
@@ -45,5 +56,12 @@ class StockSerializer(serializers.ModelSerializer):
         # здесь вам надо обновить связанные таблицы
         # в нашем случае: таблицу StockProduct
         # с помощью списка positions
+
+        for item in positions:
+            operation = StockProduct.objects.update_or_create(stock=stock,
+                                                              product=item.get('product'),
+                                                              quantity=item.get('quantity'),
+                                                              price=item.get('price')
+                                                              ).save()
 
         return stock
