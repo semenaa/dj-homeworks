@@ -42,7 +42,7 @@ class StockSerializer(serializers.ModelSerializer):
                                                               product=item.get('product'),
                                                               quantity=item.get('quantity'),
                                                               price=item.get('price')
-                                                              ).save()
+                                                              )
 
         return stock
 
@@ -62,6 +62,6 @@ class StockSerializer(serializers.ModelSerializer):
                                                               product=item.get('product'),
                                                               quantity=item.get('quantity'),
                                                               price=item.get('price')
-                                                              ).save()
+                                                              )
 
         return stock
