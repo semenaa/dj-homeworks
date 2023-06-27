@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from logistic.models import Product, StockProduct, Stock
 
 
@@ -38,11 +37,11 @@ class StockSerializer(serializers.ModelSerializer):
         # с помощью списка positions
 
         for item in positions:
-            operation = StockProduct.objects.get_or_create(stock=stock,
-                                                              product=item.get('product'),
-                                                              quantity=item.get('quantity'),
-                                                              price=item.get('price')
-                                                              )
+            StockProduct.objects.get_or_create(stock=stock,
+                                              product=item.get('product'),
+                                              quantity=item.get('quantity'),
+                                              price=item.get('price')
+                                              )
 
         return stock
 
@@ -58,10 +57,10 @@ class StockSerializer(serializers.ModelSerializer):
         # с помощью списка positions
 
         for item in positions:
-            operation = StockProduct.objects.update_or_create(stock=stock,
-                                                              product=item.get('product'),
-                                                              quantity=item.get('quantity'),
-                                                              price=item.get('price')
-                                                              )
+            defaults = {'quantity': item.get('quantity'), 'price': item.get('price')}
+            StockProduct.objects.update_or_create(stock=stock,
+                                                  product=item.get('product'),
+                                                  defaults=defaults
+                                                  )
 
         return stock
