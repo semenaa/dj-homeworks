@@ -1,7 +1,8 @@
 from rest_framework.permissions import BasePermission
 
 
-class IsOwner(BasePermission):
+class IsCreatorOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user == object.user
-
+        if request.method == 'GET':
+            return True
+        return request.user == obj.creator
