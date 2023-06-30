@@ -147,6 +147,9 @@ REST_FRAMEWORK = {
         'anon': '10/minute',
         'user': '20/minute'
     },
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

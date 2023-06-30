@@ -5,25 +5,37 @@ from rest_framework.viewsets import ModelViewSet
 from advertisements.permissions import IsCreatorOrReadOnly
 from advertisements.models import Advertisement
 from advertisements.serializers import AdvertisementSerializer
+from django_filters import rest_framework as filters
+
+
+class AdvFilter(filters.FilterSet):
+    created_at = filters.DateFromToRangeFilter()
+
+    class Meta:
+        model = Advertisement
+        fields = ['creator', 'status', 'created_at']
 
 
 class AdvertisementViewSet(ModelViewSet):
     """ViewSet для объявлений."""
 
-    # TODO: настройте ViewSet, укажите атрибуты для кверисета,
-    #   сериализаторов и фильтров
-
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = (filters.DjangoFilterBackend,)
     permission_classes = [IsAuthenticatedOrReadOnly, IsCreatorOrReadOnly | IsAdminUser]
+    filterset_class = AdvFilter
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
+    # обошелся обычным способом, указанным в туторьялах,
+    # а этот не очень понял; как реализовать что-то похожее на has_object_permission()
 
     # def get_permissions(self):
     #     """Получение прав для действий."""
-    #     if self.action in ["create", "update", "partial_update"]:
+    #     if self.action in ["create", "update", "partial_update", "delete"]:
+    #         if self.request.user ==
+    #
     #         return [IsAuthenticatedOrReadOnly()]
     #     return []
+
