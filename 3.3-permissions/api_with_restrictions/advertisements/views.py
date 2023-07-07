@@ -2,18 +2,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.viewsets import ModelViewSet
+
+from advertisements.filters import AdvFilter
 from advertisements.permissions import IsCreatorOrReadOnly
 from advertisements.models import Advertisement
 from advertisements.serializers import AdvertisementSerializer
 from django_filters import rest_framework as filters
 
 
-class AdvFilter(filters.FilterSet):
-    created_at = filters.DateFromToRangeFilter()
 
-    class Meta:
-        model = Advertisement
-        fields = ['creator', 'status', 'created_at']
 
 
 class AdvertisementViewSet(ModelViewSet):

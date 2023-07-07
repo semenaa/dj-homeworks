@@ -23,7 +23,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
         fields = ('id', 'title', 'description', 'creator',
-                  'status', 'created_at', )
+                  'status', 'created_at',)
 
     def create(self, validated_data):
         """Метод для создания"""
@@ -41,9 +41,18 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
-        # Ограничение на десять открытых объявлений
-        if len(Advertisement.objects.filter(creator=self.context["request"].user,
-                                            status=AdvertisementStatusChoices.OPEN)) >= 10:
-            raise serializers.ValidationError('Too many opened advertisements')
+        # Ограничение на десять открытых объявлений.
+        # Статус клиенту отправлять не обязательно, поэтому есть доп. проверка
+        # на наличие статуса в полученных данных, и если он "закрыть",
+        # то такое изменение внести дозволено
+        if (Advertisement.objects.filter(
+                creator=self.context["request"].user,
+                status=AdvertisementStatusChoices.OPEN)
+        ).count() >= 10:
+            if 'status' in data.keys():
+                if data['status'] == 'OPEN':
+                    raise serializers.ValidationError('Too many opened advertisements')
+            else:
+                raise serializers.ValidationError('Too many opened advertisements')
 
         return data
